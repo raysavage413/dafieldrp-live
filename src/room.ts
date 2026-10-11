@@ -194,7 +194,8 @@ export class LiveStreamRoom extends DurableObject<Env> {
       if (oldPublisher) await this.closePublisher(realtime, oldPublisher);
 
       return success({ sessionDescription: response.sessionDescription });
-    } catch {
+    } catch (error) {
+      console.error(JSON.stringify({ message: 'Realtime publisher negotiation failed', phase: newSessionId ? 'add-tracks' : 'create-session', error: (error instanceof Error ? error.message : String(error)).slice(0, 240) }));
       if (oldPublisher) {
         await Promise.allSettled(retargetedViewers.map((viewer) => this.retargetViewer(
           realtime,
